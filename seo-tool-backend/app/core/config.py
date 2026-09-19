@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # Database
-    database_url: str = "postgresql+asyncpg://seo_user:seo_password@localhost:5432/seo_tool"
-    database_url_sync: str = "postgresql://seo_user:seo_password@localhost:5432/seo_tool"
+    database_url: str = "postgresql+asyncpg://seo_user:seo_password@localhost:5434/seo_tool"
+    database_url_sync: str = "postgresql://seo_user:seo_password@localhost:5434/seo_tool"
 
     # Redis / Celery
     redis_url: str = "redis://localhost:6379/0"
