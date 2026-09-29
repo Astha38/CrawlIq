@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, ForeignKey, Enum as SAEnum, func, Integer
 from sqlalchemy.dialects.postgresql import UUID
@@ -27,7 +27,7 @@ class Crawl(Base):
     completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str] = mapped_column(nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), default=lambda: datetime.now(timezone.utc))
 
     site: Mapped["Site"] = relationship(back_populates="crawls")
     pages: Mapped[list["Page"]] = relationship(back_populates="crawl", cascade="all, delete-orphan")
