@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, Integer, DateTime, ForeignKey, Enum as SAEnum, func
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import String, Integer, DateTime, ForeignKey, Enum as SAEnum, func, JSON, Uuid
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -18,8 +18,8 @@ class Page(Base):
 
     __tablename__ = "pages"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    crawl_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("crawls.id", ondelete="CASCADE"))
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    crawl_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("crawls.id", ondelete="CASCADE"))
 
     url: Mapped[str] = mapped_column(String(2048), nullable=False, index=True)
     status_code: Mapped[int] = mapped_column(Integer, nullable=True)
@@ -27,10 +27,10 @@ class Page(Base):
 
     # Semi-structured SEO extraction: title, meta_description, h1s, word_count,
     # internal_links, external_links, images (with alt text flags), canonical, etc.
-    raw_data: Mapped[dict] = mapped_column(JSONB, default=dict)
+    raw_data: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict)
 
     # PageSpeed / Lighthouse results, also semi-structured
-    performance_data: Mapped[dict] = mapped_column(JSONB, nullable=True)
+    performance_data: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), nullable=True)
 
     crawled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

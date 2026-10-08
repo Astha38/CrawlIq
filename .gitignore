@@ -10,3 +10,7 @@ dist/
 .vscode/
 .idea/
 scratch/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
