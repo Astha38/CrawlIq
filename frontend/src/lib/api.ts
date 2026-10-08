@@ -168,6 +168,26 @@ const MOCK_ISSUES: Record<string, Issue[]> = {
   ]
 };
 
+const MOCK_PAGES: Record<string, Page[]> = {
+  'crawl-101': [
+    {
+      id: 'p-1',
+      crawl_id: 'crawl-101',
+      url: 'https://techcrunch.com',
+      status_code: 200,
+      depth: 0,
+      title: 'TechCrunch – Startup and Technology News',
+      meta_description: 'Reporting on the business of technology, startups, venture capital funding, and Silicon Valley.',
+      h1: 'Tech News & Analysis',
+      load_time_ms: 420,
+      is_indexable: true,
+      canonical_url: 'https://techcrunch.com/',
+      score: 95,
+      issues_count: 1
+    }
+  ]
+};
+
 const MOCK_PAGESPEED: Record<string, PageSpeedMetrics> = {
   'crawl-101': {
     performance_score: 76,

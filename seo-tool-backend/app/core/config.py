@@ -27,7 +27,14 @@ class Settings(BaseSettings):
     pagespeed_api_key: str = ""
     anthropic_api_key: str = ""
 
+    # CORS
+    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+
     env: str = "development"
+
+    @property
+    def parsed_cors_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 settings = Settings()
