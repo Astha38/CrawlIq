@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Loader2, CheckCircle2, Bot, Sparkles, X } from 'lucide-react';
 
 interface CrawlProgressModalProps {
@@ -21,8 +22,14 @@ const STAGES = [
 ];
 
 export default function CrawlProgressModal({ isOpen, onClose, siteName, siteUrl, onComplete }: CrawlProgressModalProps) {
+  const router = useRouter();
   const [currentStage, setCurrentStage] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+
+  const handleViewResults = () => {
+    onClose();
+    router.push('/audits');
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -128,8 +135,8 @@ export default function CrawlProgressModal({ isOpen, onClose, siteName, siteUrl,
         {/* Action Button */}
         {isFinished && (
           <button
-            onClick={onClose}
-            className="w-full py-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2"
+            onClick={handleViewResults}
+            className="w-full py-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             View Audit Results
