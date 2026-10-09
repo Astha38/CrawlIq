@@ -251,22 +251,29 @@ export const api = {
   async getSites(): Promise<Site[]> {
     try {
       const rawSites = await fetchWithFallback<any[]>(`${API_BASE_URL}/sites`, {}, MOCK_SITES as any);
+      let sitesList: Site[] = [];
       if (!Array.isArray(rawSites) || rawSites === (MOCK_SITES as any)) {
-        return MOCK_SITES;
+        sitesList = MOCK_SITES;
+      } else {
+        sitesList = rawSites.map(s => ({
+          id: s.id,
+          name: s.display_name || s.domain,
+          url: s.domain.startsWith('http') ? s.domain : `https://${s.domain}`,
+          crawl_interval: 'daily',
+          created_at: s.created_at || new Date().toISOString(),
+          updated_at: s.updated_at || new Date().toISOString(),
+          latest_score: 88,
+          pages_count: 120,
+          critical_issues_count: 2,
+        }));
       }
-      return rawSites.map(s => ({
-        id: s.id,
-        name: s.display_name || s.domain,
-        url: s.domain.startsWith('http') ? s.domain : `https://${s.domain}`,
-        crawl_interval: 'daily',
-        created_at: s.created_at || new Date().toISOString(),
-        updated_at: s.updated_at || new Date().toISOString(),
-        latest_score: 88,
-        pages_count: 120,
-        critical_issues_count: 2,
-      }));
+      const uniqueMap = new Map<string, Site>();
+      sitesList.forEach(s => uniqueMap.set(s.id, s));
+      return Array.from(uniqueMap.values());
     } catch {
-      return MOCK_SITES;
+      const uniqueMap = new Map<string, Site>();
+      MOCK_SITES.forEach(s => uniqueMap.set(s.id, s));
+      return Array.from(uniqueMap.values());
     }
   },
 
@@ -310,11 +317,15 @@ export const api = {
         pages_count: 0,
         critical_issues_count: 0,
       };
-      MOCK_SITES.unshift(createdSite);
+      if (!MOCK_SITES.some(s => s.id === createdSite.id)) {
+        MOCK_SITES.unshift(createdSite);
+      }
       return createdSite;
     } catch (e) {
       console.warn('Backend API createSite failed, saving locally', e);
-      MOCK_SITES.unshift(newSiteFallback);
+      if (!MOCK_SITES.some(s => s.id === newSiteFallback.id)) {
+        MOCK_SITES.unshift(newSiteFallback);
+      }
       return newSiteFallback;
     }
   },

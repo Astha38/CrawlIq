@@ -59,7 +59,11 @@ export default function Dashboard() {
 
   const handleAddSiteSubmit = async (data: { name: string; url: string; crawl_interval: string; trigger_initial_crawl: boolean }) => {
     const created = await api.createSite(data);
-    setSites([created, ...sites]);
+    setSites(prev => {
+      const map = new Map<string, Site>();
+      [created, ...prev].forEach(s => map.set(s.id, s));
+      return Array.from(map.values());
+    });
     if (data.trigger_initial_crawl) {
       setSelectedSite({ name: created.name, url: created.url });
       setIsCrawlProgressOpen(true);
@@ -319,7 +323,7 @@ export default function Dashboard() {
                   const color = avatarColors[idx % avatarColors.length];
 
                   return (
-                    <div key={st.id} className="flex items-center justify-between text-xs py-1">
+                    <div key={`${st.id}-${idx}`} className="flex items-center justify-between text-xs py-1">
                       <div className="flex items-center gap-3 overflow-hidden">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${color}`}>
                           {st.name.charAt(0)}

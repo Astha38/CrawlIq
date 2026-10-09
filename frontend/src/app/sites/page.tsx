@@ -44,7 +44,11 @@ export default function SitesPage() {
 
   const handleAddSite = async (data: { name: string; url: string; crawl_interval: string; trigger_initial_crawl: boolean }) => {
     const newSite = await api.createSite(data);
-    setSites([newSite, ...sites]);
+    setSites(prev => {
+      const map = new Map<string, Site>();
+      [newSite, ...prev].forEach(s => map.set(s.id, s));
+      return Array.from(map.values());
+    });
     if (data.trigger_initial_crawl) {
       setSelectedSite({ name: newSite.name, url: newSite.url });
       setIsCrawlProgressOpen(true);
@@ -95,7 +99,7 @@ export default function SitesPage() {
             const color = avatarColors[idx % avatarColors.length];
 
             return (
-              <div key={st.id} className="bg-[#16161a] border border-[#242429] rounded-2xl p-6 shadow-xl space-y-5 flex flex-col justify-between hover:border-[#33333b] transition-all">
+              <div key={`${st.id}-${idx}`} className="bg-[#16161a] border border-[#242429] rounded-2xl p-6 shadow-xl space-y-5 flex flex-col justify-between hover:border-[#33333b] transition-all">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3 overflow-hidden">
