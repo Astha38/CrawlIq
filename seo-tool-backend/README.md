@@ -1,75 +1,44 @@
-# SEO Analysis Tool — Backend (Person 1: Crawling, Scoring, API)
+# CrawlIQ Backend — FastAPI, Scrapy, Playwright & Celery
 
-Core engine for the SEO analysis tool: web crawling, technical SEO scoring,
-and the FastAPI + PostgreSQL backend that the frontend and AI recommendation
-layer build on top of.
+Core engine for the **CrawlIQ** SEO analysis platform: web crawling, dynamic JavaScript rendering, technical SEO diagnostic rules, multi-dimensional health scoring, and REST API.
 
-## Stack
-- FastAPI (async) + SQLAlchemy async ORM + Alembic
-- PostgreSQL (JSONB for semi-structured SEO data)
-- Celery + Redis for background crawl jobs
-- Scrapy (static pages) + Playwright (JS-rendered pages)
+---
 
-## Getting started
+## 🛠️ Stack & Technologies
+
+* **Framework**: FastAPI (Python 3.13)
+* **Database**: SQLAlchemy Async ORM with SQLite / PostgreSQL
+* **Migrations**: Alembic
+* **Crawling Engines**: Scrapy (fast static parsing) + Playwright (headless Chromium for SPAs)
+* **Background Processing**: Celery + Redis
+* **Testing**: Pytest (35 test suite)
+
+---
+
+## 🚀 Running the Backend
 
 ```bash
-# 1. Start Postgres + Redis
-docker compose up -d
-
-# 2. Create venv and install deps
+# 1. Activate virtual environment
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # Or .\venv\Scripts\Activate.ps1 on Windows
+
+# 2. Install dependencies & browser binaries
 pip install -r requirements.txt
 playwright install chromium
 
-# 3. Copy env file
-cp .env.example .env
-
-# 4. Run first migration
-alembic revision --autogenerate -m "init schema"
-alembic upgrade head
-
-# 5. Run the API
-uvicorn app.main:app --reload
+# 3. Start the FastAPI server
+uvicorn app.main:app --reload --port 8000
 ```
 
-API docs available at http://localhost:8000/docs once running.
+Interactive API Documentation: `http://localhost:8000/docs`
 
-## Project structure
+---
 
-```
-app/
-  core/           # config, celery app
-  models/         # SQLAlchemy models (Site, Crawl, Page, Issue, Score)
-  schemas/        # Pydantic request/response schemas — THE API CONTRACT
-  api/routes/      # FastAPI route handlers
-  services/       # Celery tasks, crawling logic, scoring logic (build out here)
-  database.py     # async engine/session setup
-  main.py         # FastAPI app entrypoint
-alembic/          # migrations
+## 🧪 Running Tests
+
+```bash
+# Set PYTHONPATH and execute pytest suite
+python -m pytest tests/ -v
 ```
 
-## API contract (Week 1 — stable for frontend/AI integration)
-
-| Endpoint | Purpose |
-|---|---|
-| `POST /api/v1/sites` | Register a site |
-| `GET /api/v1/sites` | List user's sites |
-| `GET /api/v1/sites/{id}/score` | Latest score for a site |
-| `POST /api/v1/crawls` | Start a crawl (async, returns pending) |
-| `GET /api/v1/crawls/{id}` | Poll crawl status |
-| `GET /api/v1/crawls/{id}/results` | Full results: pages + issues + score |
-
-Route handlers currently raise `501 Not Implemented` — schemas (`app/schemas/`)
-are the real contract and are stable, so the frontend can be built against
-these response shapes with mocked data now.
-
-## Build order (see full roadmap)
-
-1. Week 1: this scaffold ✅ — env, schema, migrations, route stubs
-2. Week 2: Scrapy crawl → Postgres, one static site, end-to-end
-3. Week 3: Playwright routing, scoring logic v1, PageSpeed integration
-4. Week 4: Celery orchestration, retries, error handling
-5. Week 5: Integration with Person 2's frontend/AI layer
-6. Week 6-7: Caching, tests, edge cases
-7. Week 8: Deploy (Railway/Render) + architecture writeup
+All 35 unit & integration tests verify crawler fallback routing, PageSpeed service integration, issue diagnostic rules, scoring formulas, and API routes.
